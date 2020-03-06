@@ -157,21 +157,46 @@ unary_expression = _{
     primary_expression
 }
 
-multiplicative_expression = { unary_expression ~ ("*" ~ unary_expression)* }
+multiplicative_expression = {
+    unary_expression ~ "*" ~ multiplicative_expression
+  | unary_expression
+}
+
 additive_expression = { multiplicative_expression ~ ("+" ~ multiplicative_expression)* }
+
 shift_expression = _{
     additive_expression
 }
+
 relational_expression = _{
     shift_expression
 }
 
-equality_expression = { relational_expression ~ ("==" ~ relational_expression)* }
-and_expression = { equality_expression ~ ("&" ~ equality_expression)* }
-exclusive_or_expression = { and_expression ~ ("^" ~ and_expression)* }
-inclusive_or_expression = { exclusive_or_expression ~ ("|" ~ exclusive_or_expression)* }
-logical_and_expression = { inclusive_or_expression ~ ("&&" ~ inclusive_or_expression)* }
-logical_or_expression = { logical_and_expression ~ ("||" ~ logical_and_expression)* }
+equality_expression = {
+    relational_expression ~ "==" ~ relational_expression
+  | relational_expression ~ "!=" ~ relational_expression
+  | relational_expression
+}
+and_expression = {
+    equality_expression ~ "&" ~ and_expression
+  | equality_expression
+}
+exclusive_or_expression = {
+    and_expression ~ "^" ~ exclusive_or_expression
+  | and_expression
+}
+inclusive_or_expression = {
+    exclusive_or_expression ~ "|" ~ inclusive_or_expression
+  | exclusive_or_expression
+}
+logical_and_expression = {
+    inclusive_or_expression ~ "&&" ~ logical_and_expression
+  | inclusive_or_expression
+}
+logical_or_expression = {
+    logical_and_expression ~ "||" ~ logical_or_expression
+  | logical_and_expression
+}
 
 paren_rhs_stmt = _{ "(" ~ logical_or_expression ~ ")" }
 

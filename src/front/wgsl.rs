@@ -336,8 +336,24 @@ impl Parser {
             Rule::ident => {
                 ctx.lookup_ident.lookup(primary_expression.as_str())
             }
+            Rule::multiplicative_expression => {
+                self.parse_multiplicative_expression(primary_expression, ctx)
+            }
             _ => panic!("Unknown expression {:?}", primary_expression),
         }
+    }
+
+    fn parse_multiplicative_expression(
+        &self,
+        pair: pest::iterators::Pair<Rule>,
+        mut context: ExpressionContext,
+     ) -> ExpressionResult {
+        context.parse_binary(
+            pair,
+            Rule::multiplicative_expression,
+            crate::BinaryOperator::Multiply,
+            |pair, context| self.parse_primary_expression(pair, context),
+        )
     }
 
     fn parse_relational_expression(
